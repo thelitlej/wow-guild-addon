@@ -1,8 +1,7 @@
 ## Interface: 11302
-## Title: My First Addon
+## Title: BrawlGaming
 ## Author: Jonas Gustafson
 ## Version: 1.0
-
 
 mainMenu.lua
 main.lua
