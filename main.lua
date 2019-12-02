@@ -63,12 +63,26 @@ InspectPlayer_EventFrame:SetScript("OnEvent",
 GuildAddonMessage_EventFrame:SetScript("OnEvent",
     function(self, event, prefix, msg, channel, sender)
         if (prefix == "Brawl") then
-            print(msg)
+            
+            
+            for w in msg:gmatch("(.-),") do print(w) end
+         
+            
+            --print(table.getn(arr1))
+
+            --for in pairs(arr1) do 
+
+            --    print(i)
+            --end
+                
+            
         end
      
     end
         
 )
+
+
 
 
 

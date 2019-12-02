@@ -243,13 +243,14 @@ ReadyCheckButton:SetScript("OnClick", function() DoReadyCheck() end)
 
 RaidRollButton:SetScript("OnClick", function()
     successfulRequest = C_ChatInfo.RegisterAddonMessagePrefix("Brawl")
-    success = C_ChatInfo.SendAddonMessage("Brawl", "TJJEAJSDJAJSDJASd", "GUILD")
-    if (success) then 
-        print("Success")
-        C_ChatInfo.GetRegisteredAddonMessagePrefixes("Brawl")
+    array = "ammo:23412,head:34234,neck:32423,shoulders:13452,back:23412"
+ 
+    if (successfulRequest) then
+        C_ChatInfo.SendAddonMessage("Brawl", array, "GUILD")
     else
-        print("Nope")
+        print("Could not send information")
     end
+    
     local members = GetNumGroupMembers()
     local winner = math.random(1, members)
     local winnerName = GetRaidRosterInfo(winner)
