@@ -1,9 +1,11 @@
 local GuildRoster_EventFrame = CreateFrame("Frame")
 local InspectPlayer_EventFrame = CreateFrame("Frame")
+local GuildAddonMessage_EventFrame = CreateFrame("Frame")
 
  
 GuildRoster_EventFrame:RegisterEvent("GUILD_ROSTER_UPDATE")
 InspectPlayer_EventFrame:RegisterEvent("READY_CHECK_CONFIRM")
+GuildAddonMessage_EventFrame:RegisterEvent("CHAT_MSG_ADDON")
  
 GuildRoster_EventFrame:SetScript("OnEvent",
 	function(self, event, ...)
@@ -55,3 +57,20 @@ InspectPlayer_EventFrame:SetScript("OnEvent",
         end
     end
 )
+
+
+
+GuildAddonMessage_EventFrame:SetScript("OnEvent",
+    function(self, event, prefix, msg, channel, sender)
+        if (prefix == "Brawl") then
+            print(msg)
+        end
+     
+    end
+        
+)
+
+
+
+
+

@@ -3,5 +3,6 @@
 ## Author: Jonas Gustafson
 ## Version: 1.0
 
-mainMenu.lua
 main.lua
+mainMenu.lua
+

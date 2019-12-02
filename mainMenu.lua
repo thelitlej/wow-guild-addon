@@ -2,8 +2,7 @@ local frameWidth = 750
 local frameHeight = 500
 local buttonWidth = frameWidth / 4
 
-local MainFrame =
-    CreateFrame("Frame", MainFrame, UIParent, "BasicFrameTemplate")
+local MainFrame = CreateFrame("Frame", MainFrame, UIParent, "BasicFrameTemplate")
 MainFrame:SetSize(frameWidth, frameHeight)
 MainFrame:SetMovable(true)
 MainFrame:SetPoint("CENTER")
@@ -11,7 +10,7 @@ MainFrame:EnableMouse(true)
 MainFrame:SetFrameStrata("TOOLTIP")
 MainFrame:SetFrameLevel(3)
 MainFrame:SetClampedToScreen(true)
-MainFrame.Bg:SetAlpha(0)
+MainFrame.Bg:SetAlpha(0) 
 -- MainFrame:Hide()
 
 local InnerMainFrame = CreateFrame("Frame", InnerMainFrame, MainFrame,
@@ -119,9 +118,14 @@ local function SetTabs(frame, numTabs, ...)
             Test:SetSize(100, 100)
             Test:SetPoint("CENTER")
 
-        elseif (select(i, ...) == "Raid") then
+        elseif (select(i, ...) == "Raids") then
             ReadyCheckButton:Hide()
             RaidRollButton:Hide()
+
+        elseif (select(i, ...) == "Dungeons") then
+            Test = CreateFrame("Frame", nil, tab.content, "InsetFrameTemplate")
+            Test:SetSize(200, 200)
+            Test:SetPoint("CENTER")
 
         elseif (select(i, ...) == "Gear") then
             Test = CreateFrame("Frame", nil, tab.content, "InsetFrameTemplate")
@@ -146,8 +150,7 @@ local function SetTabs(frame, numTabs, ...)
     return unpack(contents)
 end
 
-local content1, content2, content3 = SetTabs(InnerMainFrame, 3, "DKP", "Raid",
-                                             "Gear")
+local content1, content2, content3, content4 = SetTabs(InnerMainFrame, 4, "DKP", "Raids", "Dungeons", "Gear")
 
 -- Minimap
 
@@ -159,7 +162,6 @@ minibtn:SetMovable(true)
 minibtn:SetNormalTexture("Interface/COMMON/Indicator-Yellow.png")
 minibtn:SetPushedTexture("Interface/COMMON/Indicator-Yellow.png")
 minibtn:SetHighlightTexture("Interface/COMMON/Indicator-Yellow.png")
-
 local myIconPos = 0
 
 local function UpdateMapBtn()
@@ -197,11 +199,13 @@ minibtn:SetScript("OnClick", function()
         content1:Hide()
         content2:Hide()
         content3:Hide()
+        content4:Hide()
     else
         MainFrame:Show()
         content1:Show()
         content2:Show()
         content3:Show()
+        content4:Show()
     end
 end)
 
@@ -216,11 +220,13 @@ ExitButton:SetScript("OnClick", function()
         content1:Hide()
         content2:Hide()
         content3:Hide()
+        content4:Hide()
     else
         MainFrame:Show()
         content1:Show()
         content2:Show()
         content3:Show()
+        content4:Show()
     end
 end)
 
@@ -236,6 +242,14 @@ end
 ReadyCheckButton:SetScript("OnClick", function() DoReadyCheck() end)
 
 RaidRollButton:SetScript("OnClick", function()
+    successfulRequest = C_ChatInfo.RegisterAddonMessagePrefix("Brawl")
+    success = C_ChatInfo.SendAddonMessage("Brawl", "TJJEAJSDJAJSDJASd", "GUILD")
+    if (success) then 
+        print("Success")
+        C_ChatInfo.GetRegisteredAddonMessagePrefixes("Brawl")
+    else
+        print("Nope")
+    end
     local members = GetNumGroupMembers()
     local winner = math.random(1, members)
     local winnerName = GetRaidRosterInfo(winner)
@@ -244,31 +258,9 @@ RaidRollButton:SetScript("OnClick", function()
     else
         SendChatMessage("Congratulations " .. winnerName, "PARTY", "COMMON")
     end
-    print(winnerName)
 end)
------------------------------------------------------------------------
 
--- local DKPbutton = CreateFrame("Button", nil, MainFrame, "TabButtonTemplate")
--- DKPbutton:SetPoint("BOTTOMLEFT", 2, 2)
--- DKPbutton:SetSize(buttonWidth, 22)
--- DKPbutton:SetText("DKP")
--- DKPbutton:SetNormalFontObject("GameFontNormalSmall")
 
--- local calendarButton = CreateFrame("Button", nil, MainFrame, "GameMenuButtonTemplate")
--- calendarButton:SetPoint("BOTTOMLEFT", buttonWidth + 2, 2)
--- calendarButton:SetSize(buttonWidth, 22)
--- calendarButton:SetText("Calendar")
--- calendarButton:SetNormalFontObject("GameFontNormalSmall")
 
--- local calendarButton = CreateFrame("Button", nil, MainFrame, "UIServiceButtonTemplate")
--- calendarButton:SetPoint("BOTTOMLEFT", buttonWidth*2, 2)
--- calendarButton:SetSize(buttonWidth, 22)
--- calendarButton:SetText("Gear")
--- calendarButton:SetNormalFontObject("GameFontNormalSmall")
 
--- local calendarButton = CreateFrame("Button", nil, MainFrame, "UIPanelButtonGrayTemplate")
--- calendarButton:SetPoint("BOTTOMLEFT", buttonWidth*3, 2)
--- calendarButton:SetSize(buttonWidth, 22)
--- calendarButton:SetText("Raid Utils")
--- calendarButton:SetNormalFontObject("GameFontNormalSmall")
 
