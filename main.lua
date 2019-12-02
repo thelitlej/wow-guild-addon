@@ -58,29 +58,36 @@ InspectPlayer_EventFrame:SetScript("OnEvent",
     end
 )
 
+function createItemTable(itemList)
+    map = {}
+    for item in itemList:gmatch("([^,]+)") do 
+        i = 0
+        slot = ""
+        for splitItem in item:gmatch("([^:]+)") do 
+            if (i == 0) then
+                slot = splitItem
+            else 
+                map[slot] = splitItem
+            end
+            i = i + 1
+        end
+    end
+    return map
+end
 
 
 GuildAddonMessage_EventFrame:SetScript("OnEvent",
     function(self, event, prefix, msg, channel, sender)
         if (prefix == "Brawl") then
-            
-            
-            for w in msg:gmatch("(.-),") do print(w) end
-         
-            
-            --print(table.getn(arr1))
-
-            --for in pairs(arr1) do 
-
-            --    print(i)
-            --end
-                
-            
+            map = createItemTable(msg)
+    
+            for key, value in pairs(map) do
+                print(key..": "..value)
+            end
         end
-     
-    end
-        
+    end  
 )
+
 
 
 

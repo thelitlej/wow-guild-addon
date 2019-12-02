@@ -243,7 +243,26 @@ ReadyCheckButton:SetScript("OnClick", function() DoReadyCheck() end)
 
 RaidRollButton:SetScript("OnClick", function()
     successfulRequest = C_ChatInfo.RegisterAddonMessagePrefix("Brawl")
-    array = "ammo:23412,head:34234,neck:32423,shoulders:13452,back:23412"
+
+    ammount, ammo = GetInventoryItemID("player", 0)
+    print(ammount..": "..ammo)
+    array = ""
+    for i = 1, 19, 1 do
+        itemid = GetInventoryItemID("player", i)
+        if (itemid ~= nil) then
+            if (i < 19) then
+                array = array..i..":"..GetInventoryItemID("player", i)..","
+            else 
+                array = array..i..":"..GetInventoryItemID("player", i)
+            end
+        else 
+            if (i < 19) then
+                array = array..i..":".."empty"..","
+            else
+                array = array..i..":".."empty"
+            end
+        end 
+    end
  
     if (successfulRequest) then
         C_ChatInfo.SendAddonMessage("Brawl", array, "GUILD")
