@@ -2,7 +2,8 @@
 ## Title: BrawlGaming
 ## Author: Jonas Gustafson
 ## Version: 1.0
-
+## SavedVariables: BrawlGamingDB
+## SavedVariablesPerCharacter: SavedGear
 main.lua
 mainMenu.lua
 

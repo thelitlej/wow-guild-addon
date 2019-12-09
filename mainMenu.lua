@@ -2,7 +2,8 @@ local frameWidth = 750
 local frameHeight = 500
 local buttonWidth = frameWidth / 4
 
-local MainFrame = CreateFrame("Frame", MainFrame, UIParent, "BasicFrameTemplate")
+local MainFrame =
+    CreateFrame("Frame", MainFrame, UIParent, "BasicFrameTemplate")
 MainFrame:SetSize(frameWidth, frameHeight)
 MainFrame:SetMovable(true)
 MainFrame:SetPoint("CENTER")
@@ -10,7 +11,7 @@ MainFrame:EnableMouse(true)
 MainFrame:SetFrameStrata("TOOLTIP")
 MainFrame:SetFrameLevel(3)
 MainFrame:SetClampedToScreen(true)
-MainFrame.Bg:SetAlpha(0) 
+MainFrame.Bg:SetAlpha(0)
 -- MainFrame:Hide()
 
 local InnerMainFrame = CreateFrame("Frame", InnerMainFrame, MainFrame,
@@ -73,10 +74,25 @@ ReadyCheckButton:SetText("Ready Check")
 ReadyCheckButton:SetNormalFontObject("GameFontNormalSmall")
 ReadyCheckButton:SetFrameLevel(11)
 
+local TryOnButton = CreateFrame("Button", TryOn, BottomFrame,
+                                "GameMenuButtonTemplate")
+TryOnButton:SetPoint("LEFT")
+TryOnButton:SetSize(100, 22)
+TryOnButton:SetText("Try On")
+TryOnButton:SetNormalFontObject("GameFontNormalSmall")
+TryOnButton:SetFrameLevel(11)
+
 -- Tabs
+local function HideNonFocusedTabs(NumOfTabs, CurrentTab)
+    for i = 1, NumOfTabs do
+        if (_G["Tab" .. i] ~= CurrentTab) then
+            _G["Tab" .. i].content:Hide()
+        end
+    end
+end
 
 local function Tab_OnClick(self)
-
+    HideNonFocusedTabs(4, self)
     local scrollChild = CreateFrame("ScrollFrame", nil, ScrollFrame,
                                     "UIPanelScrollFrameTemplate")
 
@@ -86,9 +102,17 @@ local function Tab_OnClick(self)
     if (self:GetID() == 2) then
         ReadyCheckButton:Show()
         RaidRollButton:Show()
+        TryOnButton:Hide()
     else
         ReadyCheckButton:Hide()
         RaidRollButton:Hide()
+        TryOnButton:Hide()
+    end
+
+    if (self:GetID() == 4) then
+        TryOnButton:Show()
+        RaidRollButton:Hide()
+        ReadyCheckButton:Hide()
     end
 
     self.content:Show()
@@ -116,7 +140,7 @@ local function SetTabs(frame, numTabs, ...)
         if (select(i, ...) == "DKP") then
             Test = CreateFrame("Frame", nil, tab.content, "InsetFrameTemplate")
             Test:SetSize(100, 100)
-            Test:SetPoint("CENTER")
+            Test:SetPoint("RIGHT")
 
         elseif (select(i, ...) == "Raids") then
             ReadyCheckButton:Hide()
@@ -128,10 +152,18 @@ local function SetTabs(frame, numTabs, ...)
             Test:SetPoint("CENTER")
 
         elseif (select(i, ...) == "Gear") then
-            Test = CreateFrame("Frame", nil, tab.content, "InsetFrameTemplate")
-            Test:SetSize(50, 50)
-            Test:SetPoint("CENTER")
-
+            ModelFrame = CreateFrame("Frame", nil, tab.content)
+            ModelFrame:SetSize(325, 450)
+            ModelFrame:SetPoint("LEFT", 0, 0)
+            ModelFrame:SetFrameLevel(10)
+            f = CreateFrame("DressUpModel", "MyModelFrame", ModelFrame,
+                            "ModelWithControlsTemplate")
+            f:SetFrameLevel(55)
+            f:SetPoint("LEFT", 50, 0)
+            f:SetSize(250, 400)
+            f:SetUnit("player")
+            f:SetPosition(0,0,0)
+            f:Show()
         else
             error("invalid route")
         end
@@ -146,11 +178,11 @@ local function SetTabs(frame, numTabs, ...)
     end
 
     Tab_OnClick(_G["Tab1"])
-
     return unpack(contents)
 end
 
-local content1, content2, content3, content4 = SetTabs(InnerMainFrame, 4, "DKP", "Raids", "Dungeons", "Gear")
+local content1, content2, content3, content4 =
+    SetTabs(InnerMainFrame, 4, "DKP", "Raids", "Dungeons", "Gear")
 
 -- Minimap
 
@@ -245,31 +277,31 @@ RaidRollButton:SetScript("OnClick", function()
     successfulRequest = C_ChatInfo.RegisterAddonMessagePrefix("Brawl")
 
     ammount, ammo = GetInventoryItemID("player", 0)
-    print(ammount..": "..ammo)
     array = ""
     for i = 1, 19, 1 do
         itemid = GetInventoryItemID("player", i)
         if (itemid ~= nil) then
             if (i < 19) then
-                array = array..i..":"..GetInventoryItemID("player", i)..","
-            else 
-                array = array..i..":"..GetInventoryItemID("player", i)
-            end
-        else 
-            if (i < 19) then
-                array = array..i..":".."empty"..","
+                array = array .. i .. ":" .. GetInventoryItemID("player", i) ..
+                            ","
             else
-                array = array..i..":".."empty"
+                array = array .. i .. ":" .. GetInventoryItemID("player", i)
             end
-        end 
+        else
+            if (i < 19) then
+                array = array .. i .. ":" .. "empty" .. ","
+            else
+                array = array .. i .. ":" .. "empty"
+            end
+        end
     end
- 
+
     if (successfulRequest) then
         C_ChatInfo.SendAddonMessage("Brawl", array, "GUILD")
     else
         print("Could not send information")
     end
-    
+
     local members = GetNumGroupMembers()
     local winner = math.random(1, members)
     local winnerName = GetRaidRosterInfo(winner)
@@ -279,8 +311,3 @@ RaidRollButton:SetScript("OnClick", function()
         SendChatMessage("Congratulations " .. winnerName, "PARTY", "COMMON")
     end
 end)
-
-
-
-
-
