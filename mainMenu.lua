@@ -9,7 +9,6 @@ MainFrame:SetMovable(true)
 MainFrame:SetPoint("CENTER")
 MainFrame:EnableMouse(true)
 MainFrame:SetFrameStrata("TOOLTIP")
-MainFrame:SetFrameLevel(3)
 MainFrame:SetClampedToScreen(true)
 MainFrame.Bg:SetAlpha(0)
 -- MainFrame:Hide()
@@ -18,7 +17,6 @@ local InnerMainFrame = CreateFrame("Frame", InnerMainFrame, MainFrame,
                                    "InsetFrameTemplate")
 InnerMainFrame:SetSize(frameWidth - 6, frameHeight - 24)
 InnerMainFrame:SetPoint("CENTER", -1, -10)
-InnerMainFrame:SetFrameLevel(1)
 
 local dragFrame = CreateFrame("Frame", DragFrame, MainFrame)
 dragFrame:EnableMouse(true)
@@ -34,7 +32,6 @@ local BottomFrame = CreateFrame("Frame", BottomFrame, MainFrame,
                                 "HorizontalBarTemplate")
 BottomFrame:SetSize(frameWidth - 8, 20)
 BottomFrame:SetPoint("BOTTOM", 0, 4)
-BottomFrame:SetFrameLevel(2)
 
 local function ScrollFrame_OnMouseWheel(self, delta)
     local newValue = self:GetVerticalScroll() - (delta * 20)
@@ -64,7 +61,6 @@ RaidRollButton:SetPoint("LEFT")
 RaidRollButton:SetSize(100, 22)
 RaidRollButton:SetText("Raid Roll")
 RaidRollButton:SetNormalFontObject("GameFontNormalSmall")
-RaidRollButton:SetFrameLevel(11)
 
 local ReadyCheckButton = CreateFrame("Button", ReadyCheck, BottomFrame,
                                      "GameMenuButtonTemplate")
@@ -72,7 +68,6 @@ ReadyCheckButton:SetPoint("LEFT", 100 + 2, 0)
 ReadyCheckButton:SetSize(100, 22)
 ReadyCheckButton:SetText("Ready Check")
 ReadyCheckButton:SetNormalFontObject("GameFontNormalSmall")
-ReadyCheckButton:SetFrameLevel(11)
 
 local TryOnButton = CreateFrame("Button", TryOn, BottomFrame,
                                 "GameMenuButtonTemplate")
@@ -80,7 +75,6 @@ TryOnButton:SetPoint("LEFT")
 TryOnButton:SetSize(100, 22)
 TryOnButton:SetText("Try On")
 TryOnButton:SetNormalFontObject("GameFontNormalSmall")
-TryOnButton:SetFrameLevel(11)
 
 -- Tabs
 local function HideNonFocusedTabs(NumOfTabs, CurrentTab)
@@ -130,7 +124,6 @@ local function SetTabs(frame, numTabs, ...)
 
         tab:SetID(i)
         tab:SetText(select(i, ...))
-        tab:SetFrameLevel(0)
         tab:SetScript("OnClick", Tab_OnClick)
 
         tab.content = CreateFrame("Frame", nil, ScrollFrame)
@@ -153,17 +146,39 @@ local function SetTabs(frame, numTabs, ...)
 
         elseif (select(i, ...) == "Gear") then
             ModelFrame = CreateFrame("Frame", nil, tab.content)
-            ModelFrame:SetSize(325, 450)
+            ModelFrame:SetSize(frameHeight, frameWidth)
             ModelFrame:SetPoint("LEFT", 0, 0)
-            ModelFrame:SetFrameLevel(10)
-            f = CreateFrame("DressUpModel", "MyModelFrame", ModelFrame,
+            f = CreateFrame("DressUpModel", "MyModelFrame", tab.content,
                             "ModelWithControlsTemplate")
-            f:SetFrameLevel(55)
             f:SetPoint("LEFT", 50, 0)
             f:SetSize(250, 400)
             f:SetUnit("player")
-            f:SetPosition(0,0,0)
+            f:SetPosition(0, 0, 0)
             f:Show()
+
+            GuildNamesFrame = CreateFrame("Frame", nil, tab.content)
+            GuildNamesFrame:SetSize(frameWidth, frameHeight - 30)
+            GuildNamesFrame:SetPoint("RIGHT", 0, 0)
+
+            j = 1
+            for i = 1, GetNumGuildMembers() do
+                name = GetGuildRosterInfo(i):gsub("-Gehennas", "")
+                if (name == "Kossa" or name == "Überüberleet") then
+                    GuildMemberButton = CreateFrame("Button", "Member" .. i,
+                                                    GuildNamesFrame,
+                                                    "GameMenuButtonTemplate")
+                    GuildMemberButton:SetSize(162, 32)
+                    GuildMemberButton:SetPoint("TOP", 260, -26 * j)
+
+                    GuildMemberButton:SetText(name)
+                    GuildMemberButton:SetNormalFontObject("GameFontNormalSmall")
+                    GuildMemberButton:SetScript("OnClick",
+                                                function()
+                        print("lol")
+                    end)
+                    j = j + 1
+                end
+            end
         else
             error("invalid route")
         end
@@ -187,7 +202,6 @@ local content1, content2, content3, content4 =
 -- Minimap
 
 local minibtn = CreateFrame("Button", nil, Minimap)
-minibtn:SetFrameLevel(8)
 minibtn:SetSize(32, 32)
 minibtn:SetMovable(true)
 
@@ -274,34 +288,6 @@ end
 ReadyCheckButton:SetScript("OnClick", function() DoReadyCheck() end)
 
 RaidRollButton:SetScript("OnClick", function()
-    successfulRequest = C_ChatInfo.RegisterAddonMessagePrefix("Brawl")
-
-    ammount, ammo = GetInventoryItemID("player", 0)
-    array = ""
-    for i = 1, 19, 1 do
-        itemid = GetInventoryItemID("player", i)
-        if (itemid ~= nil) then
-            if (i < 19) then
-                array = array .. i .. ":" .. GetInventoryItemID("player", i) ..
-                            ","
-            else
-                array = array .. i .. ":" .. GetInventoryItemID("player", i)
-            end
-        else
-            if (i < 19) then
-                array = array .. i .. ":" .. "empty" .. ","
-            else
-                array = array .. i .. ":" .. "empty"
-            end
-        end
-    end
-
-    if (successfulRequest) then
-        C_ChatInfo.SendAddonMessage("Brawl", array, "GUILD")
-    else
-        print("Could not send information")
-    end
-
     local members = GetNumGroupMembers()
     local winner = math.random(1, members)
     local winnerName = GetRaidRosterInfo(winner)
@@ -309,5 +295,44 @@ RaidRollButton:SetScript("OnClick", function()
         SendChatMessage("Congratulations " .. winnerName, "RAID", "COMMON")
     else
         SendChatMessage("Congratulations " .. winnerName, "PARTY", "COMMON")
+    end
+end)
+
+local LoginEventFrame = CreateFrame("Frame", nil, nil)
+
+LoginEventFrame:RegisterEvent("PLAYER_LOGIN")
+
+LoginEventFrame:SetScript("OnEvent", function()
+    successfulRequest = C_ChatInfo.RegisterAddonMessagePrefix("Brawl")
+    if (successfulRequest) then
+        print("success")
+        array = ""
+        for i = 1, 19, 1 do
+            itemid = GetInventoryItemID("player", i)
+            print(itemid)
+            if (itemid ~= nil) then
+                if (i < 19) then
+                    array =
+                        array .. i .. ":" .. GetInventoryItemID("player", i) ..
+                            ","
+                else
+                    array = array .. i .. ":" .. GetInventoryItemID("player", i)
+                end
+            else
+                if (i < 19) then
+                    array = array .. i .. ":" .. "empty" .. ","
+                else
+                    array = array .. i .. ":" .. "empty"
+                end
+            end
+        end
+        C_ChatInfo.SendAddonMessage("Brawl", array, "GUILD")
+    else
+        print("Could not send information")
+    end
+    j = 1
+    for i = 1, GetNumGuildMembers() do
+        name = GetGuildRosterInfo(i):gsub("-Gehennas", "")
+        if (name == "Kossa" or name == "Überüberleet") then end
     end
 end)
